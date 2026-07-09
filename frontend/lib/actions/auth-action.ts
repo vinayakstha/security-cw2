@@ -35,9 +35,9 @@ export const handleRegister = async (formData: any) => {
   }
 };
 
-export const handleLogin = async (formData: any) => {
+export const handleLogin = async (formData: any, captchaToken?: string) => {
   try {
-    const result = await loginUser(formData);
+    const result = await loginUser(formData, captchaToken);
     if (result.success) {
       // If TOTP is required, return the temp token to the form
       if (result.requiresTotp) {

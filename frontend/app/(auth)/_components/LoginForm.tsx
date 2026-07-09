@@ -7,6 +7,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 import {
   handleLogin,
   handleTotpLoginVerify,
@@ -62,6 +63,9 @@ export default function LoginForm() {
 
   const [error, setError] = useState<string | null>(null);
 
+  // reCAPTCHA
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
   // Auto-submit when 6 digits are entered
   const totpCode = watchTotp("totpCode");
   const prevTotpCodeRef = useRef<string | undefined>(undefined);
@@ -80,9 +84,17 @@ export default function LoginForm() {
 
   const onSubmit = async (values: LoginFormValues) => {
     setError(null);
+
+    // Get CAPTCHA token
+    const captchaToken = recaptchaRef.current?.getValue();
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA verification");
+      return;
+    }
+
     setTransition(async () => {
       try {
-        const response = await handleLogin(values);
+        const response = await handleLogin(values, captchaToken);
         if (!response.success) {
           throw new Error(response.message);
         }
@@ -104,6 +116,9 @@ export default function LoginForm() {
       } catch (err: Error | any) {
         toast.error("Login failed");
         setError(err.message || "Login failed");
+      } finally {
+        // Reset CAPTCHA after each attempt
+        recaptchaRef.current?.reset();
       }
     });
   };
@@ -309,6 +324,14 @@ export default function LoginForm() {
               {errors.password.message}
             </p>
           )}
+        </div>
+
+        {/* CAPTCHA */}
+        <div className="flex justify-center">
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey="6LfjdEstAAAAAOvRwOrQe6FdBQfWT9p89ec1tXaR"
+          />
         </div>
 
         <div className="flex items-center justify-between text-sm">

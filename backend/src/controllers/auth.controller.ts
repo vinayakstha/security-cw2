@@ -2,6 +2,7 @@ import { UserService } from "../services/user.service";
 import { CreateUserDTO, LoginUserDTO } from "../dtos/user.dto";
 import { Request, Response } from "express";
 import z from "zod";
+import { verifyCaptcha } from "../utils/recaptcha";
 
 let userService = new UserService();
 
@@ -29,6 +30,10 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const parsedData = LoginUserDTO.safeParse(req.body);
       if (!parsedData.success) {
         return res

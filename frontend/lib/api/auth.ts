@@ -12,9 +12,12 @@ export const registerUser = async (registerData: any) => {
   }
 };
 
-export const loginUser = async (loginData: any) => {
+export const loginUser = async (loginData: any, captchaToken?: string) => {
   try {
-    const response = await axios.post(API.AUTH.LOGIN, loginData);
+    const response = await axios.post(API.AUTH.LOGIN, {
+      ...loginData,
+      ...(captchaToken && { captchaToken }),
+    });
     return response.data;
   } catch (err: Error | any) {
     throw new Error(
