@@ -1,11 +1,12 @@
 "use client";
 
 import { Mail, X } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import { forgetPasswordSchema, ForgetPasswordData } from "../schema";
 import { handleRequestPasswordReset } from "@/lib/actions/auth-action";
@@ -14,6 +15,9 @@ export default function ForgotPasswordForm() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setTransition] = useTransition();
+
+  // reCAPTCHA
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const {
     register,
@@ -27,9 +31,19 @@ export default function ForgotPasswordForm() {
   const onSubmit = (values: ForgetPasswordData) => {
     setError(null);
 
+    // Get CAPTCHA token
+    const captchaToken = recaptchaRef.current?.getValue();
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA verification");
+      return;
+    }
+
     setTransition(async () => {
       try {
-        const result = await handleRequestPasswordReset(values.email);
+        const result = await handleRequestPasswordReset(
+          values.email,
+          captchaToken,
+        );
 
         if (result.success) {
           toast.success(
@@ -42,6 +56,8 @@ export default function ForgotPasswordForm() {
       } catch (err: any) {
         toast.error(err.message || "Failed to send reset link");
         setError(err.message || "Failed to send reset link");
+      } finally {
+        recaptchaRef.current?.reset();
       }
     });
   };
@@ -93,6 +109,14 @@ export default function ForgotPasswordForm() {
           {errors.email && (
             <p className="text-sm text-red-500 mt-2">{errors.email.message}</p>
           )}
+        </div>
+
+        {/* CAPTCHA */}
+        <div className="flex justify-center">
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey="6LfjdEstAAAAAOvRwOrQe6FdBQfWT9p89ec1tXaR"
+          />
         </div>
 
         <button

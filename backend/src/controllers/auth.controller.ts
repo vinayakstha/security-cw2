@@ -74,6 +74,10 @@ export class AuthController {
 
   async sendResetPasswordEmail(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const email = req.body.email;
       const user = await userService.sendResetPasswordEmail(email);
       return res.status(200).json({
@@ -91,6 +95,10 @@ export class AuthController {
 
   async resetPassword(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const token = req.params.token as string;
       const { newPassword } = req.body;
       await userService.resetPassword(token, newPassword);

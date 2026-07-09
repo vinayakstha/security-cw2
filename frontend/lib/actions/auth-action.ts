@@ -136,9 +136,12 @@ export async function handleUpdateProfile(profileData: FormData) {
   }
 }
 
-export const handleRequestPasswordReset = async (email: string) => {
+export const handleRequestPasswordReset = async (
+  email: string,
+  captchaToken?: string,
+) => {
   try {
-    const response = await requestPasswordReset(email);
+    const response = await requestPasswordReset(email, captchaToken);
     if (response.success) {
       return {
         success: true,
@@ -160,9 +163,10 @@ export const handleRequestPasswordReset = async (email: string) => {
 export const handleResetPassword = async (
   token: string,
   newPassword: string,
+  captchaToken?: string,
 ) => {
   try {
-    const response = await resetPassword(token, newPassword);
+    const response = await resetPassword(token, newPassword, captchaToken);
     if (response.success) {
       return {
         success: true,

@@ -57,10 +57,11 @@ export const updateProfile = async (profileData: any) => {
   }
 };
 
-export const requestPasswordReset = async (email: string) => {
+export const requestPasswordReset = async (email: string, captchaToken?: string) => {
   try {
     const response = await axios.post(API.AUTH.REQUEST_PASSWORD_RESET, {
       email,
+      ...(captchaToken && { captchaToken }),
     });
     return response.data;
   } catch (error: Error | any) {
@@ -72,10 +73,15 @@ export const requestPasswordReset = async (email: string) => {
   }
 };
 
-export const resetPassword = async (token: string, newPassword: string) => {
+export const resetPassword = async (
+  token: string,
+  newPassword: string,
+  captchaToken?: string,
+) => {
   try {
     const response = await axios.post(API.AUTH.RESET_PASSWORD(token), {
-      newPassword: newPassword,
+      newPassword,
+      ...(captchaToken && { captchaToken }),
     });
     return response.data;
   } catch (error: Error | any) {
