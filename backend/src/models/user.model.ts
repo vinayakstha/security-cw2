@@ -15,6 +15,8 @@ const UserSchema: Schema = new Schema<UserType>(
       enum: ["user", "admin"],
       default: "user",
     },
+    totpSecret: { type: String, required: false },
+    totpEnabled: { type: Boolean, default: false },
   },
   {
     timestamps: true,

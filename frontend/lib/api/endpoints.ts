@@ -6,6 +6,12 @@ export const API = {
     UPDATEPROFILE: "/api/user/update-profile",
     REQUEST_PASSWORD_RESET: "/api/auth/request-password-reset",
     RESET_PASSWORD: (token: string) => `/api/auth/reset-password/${token}`,
+    TOTP: {
+      SETUP: "/api/auth/totp/setup",
+      VERIFY_ENABLE: "/api/auth/totp/verify-enable",
+      DISABLE: "/api/auth/totp/disable",
+      LOGIN_VERIFY: "/api/auth/totp/login-verify",
+    },
   },
   ADMIN: {
     CATEGORY: {

@@ -36,7 +36,19 @@ export class AuthController {
           .json({ success: false, message: z.prettifyError(parsedData.error) });
       }
       const loginData: LoginUserDTO = parsedData.data;
-      const { token, user } = await userService.loginUser(loginData);
+      const result = await userService.loginUser(loginData);
+
+      // If TOTP is required, return the temp token
+      if ((result as any).requiresTotp) {
+        return res.status(200).json({
+          success: true,
+          requiresTotp: true,
+          tempToken: (result as any).tempToken,
+          message: "TOTP verification required",
+        });
+      }
+
+      const { token, user } = result as { token: string; user: any };
       return res.status(200).json({
         success: true,
         message: "Login successful",

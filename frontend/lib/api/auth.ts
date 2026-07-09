@@ -78,3 +78,58 @@ export const resetPassword = async (token: string, newPassword: string) => {
     );
   }
 };
+
+// TOTP / 2FA
+export const setupTotp = async () => {
+  try {
+    const response = await axios.post(API.AUTH.TOTP.SETUP);
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(
+      error.response?.data?.message || error.message || "TOTP setup failed",
+    );
+  }
+};
+
+export const verifyAndEnableTotp = async (token: string, secret: string) => {
+  try {
+    const response = await axios.post(API.AUTH.TOTP.VERIFY_ENABLE, {
+      token,
+      secret,
+    });
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "TOTP verification failed",
+    );
+  }
+};
+
+export const disableTotp = async (password: string) => {
+  try {
+    const response = await axios.post(API.AUTH.TOTP.DISABLE, { password });
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(
+      error.response?.data?.message || error.message || "TOTP disable failed",
+    );
+  }
+};
+
+export const verifyTotpLogin = async (tempToken: string, token: string) => {
+  try {
+    const response = await axios.post(API.AUTH.TOTP.LOGIN_VERIFY, {
+      tempToken,
+      token,
+    });
+    return response.data;
+  } catch (error: Error | any) {
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "TOTP verification failed",
+    );
+  }
+};
