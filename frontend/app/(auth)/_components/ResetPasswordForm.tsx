@@ -1,11 +1,12 @@
 "use client";
 
 import { Lock, Eye, EyeOff, X } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import { resetPasswordSchema, ResetPasswordData } from "../schema";
 import { handleResetPassword } from "@/lib/actions/auth-action";
@@ -16,6 +17,9 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setTransition] = useTransition();
+
+  // reCAPTCHA
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
 
   const {
     register,
@@ -29,9 +33,20 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   const onSubmit = (values: ResetPasswordData) => {
     setError(null);
 
+    // Get CAPTCHA token
+    const captchaToken = recaptchaRef.current?.getValue();
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA verification");
+      return;
+    }
+
     setTransition(async () => {
       try {
-        const result = await handleResetPassword(token, values.newPassword);
+        const result = await handleResetPassword(
+          token,
+          values.newPassword,
+          captchaToken,
+        );
 
         if (result.success) {
           toast.success("Password has been reset successfully.");
@@ -42,6 +57,8 @@ export default function ResetPasswordForm({ token }: { token: string }) {
       } catch (err: any) {
         toast.error(err.message || "Failed to reset password");
         setError(err.message || "Failed to reset password");
+      } finally {
+        recaptchaRef.current?.reset();
       }
     });
   };
@@ -138,6 +155,14 @@ export default function ResetPasswordForm({ token }: { token: string }) {
               {errors.confirmNewPassword.message}
             </p>
           )}
+        </div>
+
+        {/* CAPTCHA */}
+        <div className="flex justify-center">
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey="6LfjdEstAAAAAOvRwOrQe6FdBQfWT9p89ec1tXaR"
+          />
         </div>
 
         <button

@@ -1,9 +1,12 @@
 import axios from "./axios";
 import { API } from "./endpoints";
 
-export const registerUser = async (registerData: any) => {
+export const registerUser = async (registerData: any, captchaToken?: string) => {
   try {
-    const response = await axios.post(API.AUTH.REGISTER, registerData);
+    const response = await axios.post(API.AUTH.REGISTER, {
+      ...registerData,
+      ...(captchaToken && { captchaToken }),
+    });
     return response.data;
   } catch (err: Error | any) {
     throw new Error(
@@ -12,9 +15,12 @@ export const registerUser = async (registerData: any) => {
   }
 };
 
-export const loginUser = async (loginData: any) => {
+export const loginUser = async (loginData: any, captchaToken?: string) => {
   try {
-    const response = await axios.post(API.AUTH.LOGIN, loginData);
+    const response = await axios.post(API.AUTH.LOGIN, {
+      ...loginData,
+      ...(captchaToken && { captchaToken }),
+    });
     return response.data;
   } catch (err: Error | any) {
     throw new Error(
@@ -51,10 +57,11 @@ export const updateProfile = async (profileData: any) => {
   }
 };
 
-export const requestPasswordReset = async (email: string) => {
+export const requestPasswordReset = async (email: string, captchaToken?: string) => {
   try {
     const response = await axios.post(API.AUTH.REQUEST_PASSWORD_RESET, {
       email,
+      ...(captchaToken && { captchaToken }),
     });
     return response.data;
   } catch (error: Error | any) {
@@ -66,10 +73,15 @@ export const requestPasswordReset = async (email: string) => {
   }
 };
 
-export const resetPassword = async (token: string, newPassword: string) => {
+export const resetPassword = async (
+  token: string,
+  newPassword: string,
+  captchaToken?: string,
+) => {
   try {
     const response = await axios.post(API.AUTH.RESET_PASSWORD(token), {
-      newPassword: newPassword,
+      newPassword,
+      ...(captchaToken && { captchaToken }),
     });
     return response.data;
   } catch (error: Error | any) {

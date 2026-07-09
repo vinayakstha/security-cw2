@@ -13,9 +13,9 @@ import { setUserData, setAuthToken } from "../cookie";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export const handleRegister = async (formData: any) => {
+export const handleRegister = async (formData: any, captchaToken?: string) => {
   try {
-    const result = await registerUser(formData);
+    const result = await registerUser(formData, captchaToken);
     if (result.success) {
       return {
         success: true,
@@ -35,9 +35,9 @@ export const handleRegister = async (formData: any) => {
   }
 };
 
-export const handleLogin = async (formData: any) => {
+export const handleLogin = async (formData: any, captchaToken?: string) => {
   try {
-    const result = await loginUser(formData);
+    const result = await loginUser(formData, captchaToken);
     if (result.success) {
       // If TOTP is required, return the temp token to the form
       if (result.requiresTotp) {
@@ -136,9 +136,12 @@ export async function handleUpdateProfile(profileData: FormData) {
   }
 }
 
-export const handleRequestPasswordReset = async (email: string) => {
+export const handleRequestPasswordReset = async (
+  email: string,
+  captchaToken?: string,
+) => {
   try {
-    const response = await requestPasswordReset(email);
+    const response = await requestPasswordReset(email, captchaToken);
     if (response.success) {
       return {
         success: true,
@@ -160,9 +163,10 @@ export const handleRequestPasswordReset = async (email: string) => {
 export const handleResetPassword = async (
   token: string,
   newPassword: string,
+  captchaToken?: string,
 ) => {
   try {
-    const response = await resetPassword(token, newPassword);
+    const response = await resetPassword(token, newPassword, captchaToken);
     if (response.success) {
       return {
         success: true,

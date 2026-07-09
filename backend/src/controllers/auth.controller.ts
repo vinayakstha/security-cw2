@@ -2,12 +2,17 @@ import { UserService } from "../services/user.service";
 import { CreateUserDTO, LoginUserDTO } from "../dtos/user.dto";
 import { Request, Response } from "express";
 import z from "zod";
+import { verifyCaptcha } from "../utils/recaptcha";
 
 let userService = new UserService();
 
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const parsedData = CreateUserDTO.safeParse(req.body);
       if (!parsedData.success) {
         return res
@@ -29,6 +34,10 @@ export class AuthController {
 
   async login(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const parsedData = LoginUserDTO.safeParse(req.body);
       if (!parsedData.success) {
         return res
@@ -65,6 +74,10 @@ export class AuthController {
 
   async sendResetPasswordEmail(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const email = req.body.email;
       const user = await userService.sendResetPasswordEmail(email);
       return res.status(200).json({
@@ -82,6 +95,10 @@ export class AuthController {
 
   async resetPassword(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const token = req.params.token as string;
       const { newPassword } = req.body;
       await userService.resetPassword(token, newPassword);
