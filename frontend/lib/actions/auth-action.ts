@@ -7,6 +7,7 @@ import {
   updateProfile,
   requestPasswordReset,
   resetPassword,
+  verifyTotpLogin,
 } from "../api/auth";
 import { setUserData, setAuthToken } from "../cookie";
 import { revalidatePath } from "next/cache";
@@ -38,6 +39,16 @@ export const handleLogin = async (formData: any) => {
   try {
     const result = await loginUser(formData);
     if (result.success) {
+      // If TOTP is required, return the temp token to the form
+      if (result.requiresTotp) {
+        return {
+          success: true,
+          requiresTotp: true,
+          tempToken: result.tempToken,
+          message: "TOTP verification required",
+        };
+      }
+
       await setAuthToken(result.token);
       await setUserData(result.data);
       return {
@@ -54,6 +65,33 @@ export const handleLogin = async (formData: any) => {
     return {
       success: false,
       message: err.message || "Login failed",
+    };
+  }
+};
+
+export const handleTotpLoginVerify = async (
+  tempToken: string,
+  token: string,
+) => {
+  try {
+    const result = await verifyTotpLogin(tempToken, token);
+    if (result.success) {
+      await setAuthToken(result.token);
+      await setUserData(result.data);
+      return {
+        success: true,
+        message: "Login successful",
+        data: result.data,
+      };
+    }
+    return {
+      success: false,
+      message: result.message || "TOTP verification failed",
+    };
+  } catch (err: Error | any) {
+    return {
+      success: false,
+      message: err.message || "TOTP verification failed",
     };
   }
 };

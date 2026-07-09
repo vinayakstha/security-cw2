@@ -35,6 +35,19 @@ export class UserService {
     if (!validPassword) {
       throw new HttpError(401, "Invalid credentials");
     }
+
+    // If TOTP is enabled, return a temp token for TOTP verification
+    if (user.totpEnabled) {
+      const tempPayload = {
+        id: user._id,
+        type: "totp_verify",
+      };
+      const tempToken = jwt.sign(tempPayload, JWT_SECRET, {
+        expiresIn: "5m",
+      });
+      return { requiresTotp: true, tempToken, user };
+    }
+
     const payload = {
       id: user._id,
       email: user.email,

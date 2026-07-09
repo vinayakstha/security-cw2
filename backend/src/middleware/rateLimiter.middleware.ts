@@ -62,3 +62,19 @@ export const passwordResetLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+/**
+ * Rate limiter for TOTP verification during login.
+ * Allows 5 requests per 15 minutes per IP to prevent brute-force attacks on TOTP codes.
+ */
+export const totpLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: {
+    success: false,
+    message:
+      "Too many TOTP verification attempts. Please try again after 15 minutes.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

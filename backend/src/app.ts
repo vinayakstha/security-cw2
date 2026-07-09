@@ -12,6 +12,7 @@ import serviceRoutes from "./routes/service.route";
 import bookingRoutes from "./routes/booking.route";
 import favouriteRoutes from "./routes/favourite.route";
 import paymentRoutes from "./routes/payment.route";
+import totpRoutes from "./routes/totp.route";
 import cors from "cors";
 import path from "path";
 
@@ -42,6 +43,9 @@ app.use("/api/booking", bookingRoutes);
 app.use("/api/favourite", favouriteRoutes);
 
 app.use("/api", paymentRoutes);
+
+//totp routes
+app.use("/api/auth/totp", totpRoutes);
 
 //admin routes
 app.use("/api/admin/users", adminUserRoutes);
