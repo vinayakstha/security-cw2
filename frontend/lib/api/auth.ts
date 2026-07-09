@@ -1,9 +1,12 @@
 import axios from "./axios";
 import { API } from "./endpoints";
 
-export const registerUser = async (registerData: any) => {
+export const registerUser = async (registerData: any, captchaToken?: string) => {
   try {
-    const response = await axios.post(API.AUTH.REGISTER, registerData);
+    const response = await axios.post(API.AUTH.REGISTER, {
+      ...registerData,
+      ...(captchaToken && { captchaToken }),
+    });
     return response.data;
   } catch (err: Error | any) {
     throw new Error(

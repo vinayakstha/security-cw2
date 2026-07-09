@@ -13,9 +13,9 @@ import { setUserData, setAuthToken } from "../cookie";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export const handleRegister = async (formData: any) => {
+export const handleRegister = async (formData: any, captchaToken?: string) => {
   try {
-    const result = await registerUser(formData);
+    const result = await registerUser(formData, captchaToken);
     if (result.success) {
       return {
         success: true,

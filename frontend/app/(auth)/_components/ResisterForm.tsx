@@ -1,22 +1,12 @@
-"use client";
-
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  X,
-  User,
-  Phone,
-  BadgeCheck,
-} from "lucide-react";
-import { useState, useTransition } from "react";
+"use client";import { Mail, Lock, Eye, EyeOff, X, User, Phone, BadgeCheck, } from "lucide-react";
+import { useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 import { handleRegister } from "@/lib/actions/auth-action";
 
 /* ---------------- ZOD SCHEMA ---------------- */
@@ -51,10 +41,22 @@ export default function RegisterForm() {
 
   const [error, setError] = useState("");
   const [pending, setTransition] = useTransition();
+
+  // reCAPTCHA
+  const recaptchaRef = useRef<ReCAPTCHA>(null);
+
   const onSubmit = async (data: RegisterFormValues) => {
     setError("");
+
+    // Get CAPTCHA token
+    const captchaToken = recaptchaRef.current?.getValue();
+    if (!captchaToken) {
+      setError("Please complete the CAPTCHA verification");
+      return;
+    }
+
     try {
-      const res = await handleRegister(data);
+      const res = await handleRegister(data, captchaToken);
       if (!res.success) {
         toast.error("Registration failed");
         throw new Error(res.message || "Registration failed");
@@ -66,6 +68,8 @@ export default function RegisterForm() {
     } catch (err: Error | any) {
       toast.error(err.message || "Registration failed");
       setError(err.message || "Registration failed");
+    } finally {
+      recaptchaRef.current?.reset();
     }
   };
 
@@ -265,6 +269,14 @@ export default function RegisterForm() {
               {errors.confirmPassword.message}
             </p>
           )}
+        </div>
+
+        {/* CAPTCHA */}
+        <div className="flex justify-center">
+          <ReCAPTCHA
+            ref={recaptchaRef}
+            sitekey="6LfjdEstAAAAAOvRwOrQe6FdBQfWT9p89ec1tXaR"
+          />
         </div>
 
         <button

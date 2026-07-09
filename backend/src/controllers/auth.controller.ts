@@ -9,6 +9,10 @@ let userService = new UserService();
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
+      // Verify CAPTCHA token
+      const captchaToken = req.body.captchaToken;
+      await verifyCaptcha(captchaToken);
+
       const parsedData = CreateUserDTO.safeParse(req.body);
       if (!parsedData.success) {
         return res
