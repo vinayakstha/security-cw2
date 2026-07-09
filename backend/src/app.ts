@@ -23,6 +23,8 @@ let corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:3003"],
 };
 
+app.set("trust proxy", 1);
+
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
