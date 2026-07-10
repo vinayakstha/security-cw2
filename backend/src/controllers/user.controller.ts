@@ -39,14 +39,26 @@ export class UserController {
 
   async getUserById(req: Request, res: Response) {
     try {
-      const userId = req.params.id;
-      if (!userId) {
+      const targetUserId = req.params.id;
+      if (!targetUserId) {
         return res
           .status(400)
           .json({ success: false, message: "User Id not found" });
       }
 
-      const user = await userService.getUserById(userId);
+      // IDOR protection: users can only view their own profile,
+      // unless they are an admin.
+      const requestingUserId = req.user?._id?.toString();
+      const isAdmin = req.user?.role === "admin";
+
+      if (!isAdmin && requestingUserId !== targetUserId) {
+        return res.status(403).json({
+          success: false,
+          message: "Forbidden: you can only view your own profile",
+        });
+      }
+
+      const user = await userService.getUserById(targetUserId);
       const userObj = (user as any).toObject
         ? (user as any).toObject()
         : { ...user };
