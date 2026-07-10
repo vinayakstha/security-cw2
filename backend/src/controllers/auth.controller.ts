@@ -142,19 +142,10 @@ export class AuthController {
           const result = await userService.googleLogin(user);
           const { token } = result;
 
-          // Redirect to frontend with token
-          const userData = {
-            _id: user._id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            username: user.username,
-            role: user.role,
-            profilePicture: user.profilePicture,
-          };
-
+          // Only pass the token (not user data) — the JWT payload already contains
+          // user info and can be decoded client-side without exposing it in the URL.
           return res.redirect(
-            `${CLIENT_URL}/google-callback?token=${encodeURIComponent(token)}&user=${encodeURIComponent(JSON.stringify(userData))}`,
+            `${CLIENT_URL}/google-callback?token=${encodeURIComponent(token)}`,
           );
         } catch (error: any) {
           return res.redirect(
