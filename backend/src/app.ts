@@ -1,6 +1,8 @@
 import express, { Application, Request, response, Response } from "express";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
+import passport from "passport";
+import "./config/passport";
 import authRoutes from "./routes/auth.route";
 import userRoutes from "./routes/user.route";
 import adminUserRoutes from "./routes/admin/user.route";
@@ -29,6 +31,9 @@ app.set("trust proxy", 1);
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Initialize Passport
+app.use(passport.initialize());
 
 // app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 const uploadsPath = path.resolve(__dirname, "../uploads"); // adjust based on where uploads is

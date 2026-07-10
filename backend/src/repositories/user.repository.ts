@@ -63,6 +63,11 @@ export class UserRepository implements IUserRepository {
     return { users, total };
   }
 
+  async getUserByGoogleId(googleId: string): Promise<IUser | null> {
+    const user = await UserModel.findOne({ googleId: googleId });
+    return user;
+  }
+
   async updateUser(
     id: string,
     updateData: Partial<IUser>,

@@ -3,12 +3,19 @@ import { JWT_SECRET } from "../config";
 import { Request, Response, NextFunction } from "express";
 import { HttpError } from "../errors/http-error";
 import { UserRepository } from "../repositories/user.repository";
-import { IUser } from "../models/user.model";
 
 declare global {
   namespace Express {
-    interface Request {
-      user?: Record<string, any> | IUser;
+    interface User {
+      _id: any;
+      email?: string;
+      username?: string;
+      firstName?: string;
+      lastName?: string;
+      role?: string;
+      profilePicture?: string;
+      phoneNumber?: string;
+      totpEnabled?: boolean;
     }
   }
 }

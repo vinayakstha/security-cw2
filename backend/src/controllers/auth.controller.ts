@@ -3,6 +3,9 @@ import { CreateUserDTO, LoginUserDTO } from "../dtos/user.dto";
 import { Request, Response } from "express";
 import z from "zod";
 import { verifyCaptcha } from "../utils/recaptcha";
+import passport from "passport";
+import { CLIENT_URL } from "../config";
+import { IUser } from "../models/user.model";
 
 let userService = new UserService();
 
@@ -112,5 +115,53 @@ export class AuthController {
         message: error.message || "Internal Server Error",
       });
     }
+  }
+
+  // Google OAuth - initiate
+  async googleAuth(req: Request, res: Response, next: any) {
+    passport.authenticate("google", {
+      scope: ["profile", "email"],
+      session: false,
+    })(req, res, next);
+  }
+
+  // Google OAuth - callback
+  async googleCallback(req: Request, res: Response, next: any) {
+    passport.authenticate(
+      "google",
+      { session: false },
+      async (err: Error | null, user: IUser | null) => {
+        try {
+          if (err || !user) {
+            const errorMessage = err?.message || "Google authentication failed";
+            return res.redirect(
+              `${CLIENT_URL}/login?error=${encodeURIComponent(errorMessage)}`,
+            );
+          }
+
+          const result = await userService.googleLogin(user);
+          const { token } = result;
+
+          // Redirect to frontend with token
+          const userData = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            username: user.username,
+            role: user.role,
+            profilePicture: user.profilePicture,
+          };
+
+          return res.redirect(
+            `${CLIENT_URL}/google-callback?token=${encodeURIComponent(token)}&user=${encodeURIComponent(JSON.stringify(userData))}`,
+          );
+        } catch (error: any) {
+          return res.redirect(
+            `${CLIENT_URL}/login?error=${encodeURIComponent(error.message || "Google authentication failed")}`,
+          );
+        }
+      },
+    )(req, res, next);
   }
 }

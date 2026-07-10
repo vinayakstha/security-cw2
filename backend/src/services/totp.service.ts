@@ -74,6 +74,9 @@ export class TotpService {
       throw new HttpError(400, "TOTP is not enabled");
     }
 
+    if (!user.password) {
+      throw new HttpError(400, "Cannot disable TOTP on a Google-linked account");
+    }
     const validPassword = await bcryptjs.compare(password, user.password);
     if (!validPassword) {
       throw new HttpError(401, "Invalid password");
