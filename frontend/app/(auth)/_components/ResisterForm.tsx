@@ -1,4 +1,4 @@
-"use client";import { Mail, Lock, Eye, EyeOff, X, User, Phone, BadgeCheck, } from "lucide-react";
+"use client";import { Mail, Lock, Eye, EyeOff, X, User, Phone, BadgeCheck, Chrome } from "lucide-react";
 import { useState, useTransition, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -286,6 +286,26 @@ export default function RegisterForm() {
         >
           {isSubmitting ? "Creating Account..." : "Sign Up"}
         </button>
+
+        {/* Divider */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="bg-white px-4 text-gray-500">or sign up with</span>
+          </div>
+        </div>
+
+        {/* Google OAuth */}
+        <a
+          href="/api/auth/google"
+          className="w-full flex items-center justify-center gap-3 py-3 border border-gray-300 rounded-lg
+                       hover:bg-gray-50 transition text-gray-700 font-medium"
+        >
+          <Chrome size={20} />
+          Sign up with Google
+        </a>
       </form>
 
       <p className="text-sm text-gray-600 mt-6 text-center">

@@ -16,3 +16,18 @@ if (!RECAPTCHA_SECRET) {
     "WARNING: RECAPTCHA_SECRET is not set. CAPTCHA verification will fail.",
   );
 }
+
+export const GOOGLE_CLIENT_ID: string = process.env.GOOGLE_CLIENT_ID || "";
+export const GOOGLE_CLIENT_SECRET: string =
+  process.env.GOOGLE_CLIENT_SECRET || "";
+export const GOOGLE_CALLBACK_URL: string =
+  process.env.GOOGLE_CALLBACK_URL ||
+  "http://localhost:5050/api/auth/google/callback";
+
+export const CLIENT_URL: string = process.env.CLIENT_URL || "http://localhost:3000";
+
+if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+  console.warn(
+    "WARNING: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is not set. Google OAuth will not work.",
+  );
+}

@@ -24,4 +24,11 @@ router.post(
   authController.resetPassword,
 );
 
+// Google OAuth routes
+router.get("/google", authController.googleAuth);
+router.get(
+  "/google/callback",
+  authController.googleCallback,
+);
+
 export default router;

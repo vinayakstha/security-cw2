@@ -6,6 +6,7 @@ export const API = {
     UPDATEPROFILE: "/api/user/update-profile",
     REQUEST_PASSWORD_RESET: "/api/auth/request-password-reset",
     RESET_PASSWORD: (token: string) => `/api/auth/reset-password/${token}`,
+    GOOGLE: "/api/auth/google",
     TOTP: {
       SETUP: "/api/auth/totp/setup",
       VERIFY_ENABLE: "/api/auth/totp/verify-enable",
