@@ -5,6 +5,23 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { setAuthToken, setUserData } from "@/lib/cookie";
 import { Loader2 } from "lucide-react";
 
+/**
+ * Decode the payload (middle part) of a JWT without verifying the signature.
+ * The payload is base64url-encoded JSON. This is safe for reading public claims
+ * (like role) on the client side — no secret is needed to decode.
+ */
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+    const payload = parts[1];
+    const decoded = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
 export default function GoogleCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -13,7 +30,6 @@ export default function GoogleCallbackPage() {
   useEffect(() => {
     const handleCallback = async () => {
       const token = searchParams.get("token");
-      const userParam = searchParams.get("user");
       const errorParam = searchParams.get("error");
 
       if (errorParam) {
@@ -27,22 +43,28 @@ export default function GoogleCallbackPage() {
       }
 
       try {
+        // Clean sensitive data from the URL immediately
+        window.history.replaceState({}, document.title, window.location.pathname);
+
+        // Decode user info from the JWT payload (no secret needed to decode)
+        const payload = decodeJwtPayload(token);
+        const userData = {
+          _id: payload?.id || "",
+          firstName: payload?.firstName || "",
+          lastName: payload?.lastName || "",
+          email: payload?.email || "",
+          username: payload?.username || "",
+          role: payload?.role || "user",
+        };
+
         await setAuthToken(token);
-        if (userParam) {
-          const userData = JSON.parse(decodeURIComponent(userParam));
-          await setUserData(userData);
-        }
+        await setUserData(userData);
 
         // Redirect based on user role
-        if (userParam) {
-          const userData = JSON.parse(decodeURIComponent(userParam));
-          if (userData.role === "admin") {
-            router.replace("/admin/dashboard");
-          } else {
-            router.replace("/user/services");
-          }
+        if (userData.role === "admin") {
+          router.replace("/admin/dashboard");
         } else {
-          router.replace("/");
+          router.replace("/user/services");
         }
       } catch (err) {
         setError("Failed to process authentication");

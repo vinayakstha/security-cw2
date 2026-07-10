@@ -11,6 +11,35 @@ interface ServiceCardProps {
   isFavourited?: boolean;
 }
 
+/**
+ * Validates that a URL is safe to use in CSS background-image.
+ * Only allows http, https, or relative paths starting with "/".
+ * Escapes special characters that could break out of CSS url().
+ */
+function getSafeBackgroundUrl(url: string): string {
+  const trimmed = url.trim();
+
+  // Only allow http, https, or relative paths
+  if (
+    !trimmed.startsWith("http://") &&
+    !trimmed.startsWith("https://") &&
+    !trimmed.startsWith("/")
+  ) {
+    return "";
+  }
+
+  // Escape characters dangerous in CSS url(): parentheses, quotes, backslash, newlines
+  const escaped = trimmed
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, "\\22")
+    .replace(/'/g, "\\27")
+    .replace(/\(/g, "\\28")
+    .replace(/\)/g, "\\29")
+    .replace(/[\n\r]/g, "");
+
+  return escaped;
+}
+
 export default function ServiceCard({
   serviceName,
   servicePrice,
@@ -19,14 +48,21 @@ export default function ServiceCard({
   onFavouriteClick,
   isFavourited = false,
 }: ServiceCardProps) {
+  const safeBgImage = getSafeBackgroundUrl(serviceImage);
+  const bgStyle = safeBgImage
+    ? {
+        backgroundImage: `url("${safeBgImage}")`,
+        backgroundSize: "cover" as const,
+        backgroundPosition: "center" as const,
+      }
+    : {
+        backgroundColor: "#e5e7eb",
+      };
+
   return (
     <div
       className="relative w-full h-64 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
-      style={{
-        backgroundImage: `url(${serviceImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}
+      style={bgStyle}
     >
       <div
         className="absolute inset-0 flex flex-col justify-end p-4"
