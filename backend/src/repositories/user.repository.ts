@@ -1,6 +1,10 @@
 import { QueryFilter } from "mongoose";
 import { UserModel, IUser } from "../models/user.model";
 
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export interface IUserRepository {
   getUserByEmail(email: string): Promise<IUser | null>;
   getUserByUsername(username: string): Promise<IUser | null>;
@@ -47,11 +51,12 @@ export class UserRepository implements IUserRepository {
   ): Promise<{ users: IUser[]; total: number }> {
     const filter: QueryFilter<IUser> = {};
     if (search) {
+      const safeSearch = escapeRegex(search);
       filter.$or = [
-        { username: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-        { firstName: { $regex: search, $options: "i" } },
-        { lastName: { $regex: search, $options: "i" } },
+        { username: { $regex: safeSearch, $options: "i" } },
+        { email: { $regex: safeSearch, $options: "i" } },
+        { firstName: { $regex: safeSearch, $options: "i" } },
+        { lastName: { $regex: safeSearch, $options: "i" } },
       ];
     }
     const [users, total] = await Promise.all([
