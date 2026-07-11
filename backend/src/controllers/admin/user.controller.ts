@@ -2,7 +2,12 @@ import z from "zod";
 import { CreateUserDTO, UpdateUserDTO } from "../../dtos/user.dto";
 import { AdminUserService } from "../../services/admin/user.service";
 import { Request, Response, NextFunction } from "express";
-import { QueryParams } from "../../types/query.types";
+
+const GetAllUsersQuerySchema = z.object({
+  page: z.string().optional(),
+  size: z.string().optional(),
+  search: z.string().optional(),
+});
 
 let adminUserService = new AdminUserService();
 
@@ -34,7 +39,13 @@ export class AdminUserController {
 
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const { page, size, search }: QueryParams = req.query;
+      const parsedQuery = GetAllUsersQuerySchema.safeParse(req.query);
+      if (!parsedQuery.success) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid query parameters" });
+      }
+      const { page, size, search } = parsedQuery.data;
       const { users, pagination } = await adminUserService.getAllUsers(
         page,
         size,

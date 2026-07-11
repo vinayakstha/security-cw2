@@ -81,8 +81,13 @@ export class AuthController {
       const captchaToken = req.body.captchaToken;
       await verifyCaptcha(captchaToken);
 
-      const email = req.body.email;
-      const user = await userService.sendResetPasswordEmail(email);
+      const emailParsed = z.string().email().safeParse(req.body.email);
+      if (!emailParsed.success) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid email format" });
+      }
+      const user = await userService.sendResetPasswordEmail(emailParsed.data);
       return res.status(200).json({
         success: true,
         data: user,
