@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="flex flex-col gap-8 md:flex-row md:justify-between md:items-start">
           {/* Brand */}
           <div className="flex items-center gap-2">
-            <h5 className="text-2xl font-bold">GHARCARE</h5>
+            <h5 className="text-2xl font-bold">GHARSEWA</h5>
           </div>
 
           {/* Link Groups */}
@@ -19,7 +19,7 @@ export default function Footer() {
               <ul className="space-y-1">
                 <li>
                   <a href="#" className="text-gray-500 text-sm hover:underline">
-                    Gharcare
+                    Gharsewa
                   </a>
                 </li>
                 <li>
@@ -77,7 +77,7 @@ export default function Footer() {
 
         {/* Bottom section */}
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
-          <span className="text-sm text-gray-400">© 2025 Gharcare</span>
+          <span className="text-sm text-gray-400">© 2025 Gharsewa</span>
 
           {/* Social Icons */}
           <div className="flex gap-4">
