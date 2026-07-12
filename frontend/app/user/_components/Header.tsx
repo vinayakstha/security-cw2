@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Menu } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "react-toastify";
 import LogoutModal from "@/app/_components/LogoutModal";
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+export default function Header({ onToggleSidebar }: HeaderProps) {
   const { logout } = useAuth();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
@@ -37,9 +41,17 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex justify-between items-center px-6 py-3 bg-white shadow">
+      <header className="flex justify-between items-center px-4 sm:px-6 py-3 bg-white shadow">
         {/* Left side */}
         <div className="flex items-center gap-3">
+          {/* Mobile hamburger */}
+          <button
+            onClick={onToggleSidebar}
+            className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition"
+            aria-label="Toggle sidebar"
+          >
+            <Menu size={22} />
+          </button>
           <img
             src="/images/logo.png"
             alt="Logo"
