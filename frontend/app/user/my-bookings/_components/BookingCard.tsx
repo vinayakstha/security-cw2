@@ -55,9 +55,9 @@ export default function BookingCard({
   };
 
   return (
-    <div className="flex items-center justify-between bg-white rounded-xl shadow-md p-4 w-full gap-4">
-      {/* Left: Image */}
-      <div className="shrink-0 w-28 h-28 rounded-lg overflow-hidden">
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between bg-white rounded-xl shadow-md p-3 sm:p-4 w-full gap-3 sm:gap-4">
+      {/* Left: Image - full width on mobile, fixed on desktop */}
+      <div className="w-full sm:w-28 h-40 sm:h-28 rounded-lg overflow-hidden shrink-0">
         <img
           src={serviceImage}
           alt={serviceName}
@@ -66,27 +66,39 @@ export default function BookingCard({
       </div>
 
       {/* Middle: Booking Details */}
-      <div className="flex-1 flex flex-col justify-between gap-1">
-        <h2 className="text-lg font-semibold">{serviceName}</h2>
-        <p className="text-gray-600 font-medium">Rs. {price.toFixed(2)}</p>
-
-        <div className="flex items-center gap-2 text-gray-500 text-sm">
-          <Calendar size={16} />
-          <span>{bookingDate}</span>
+      <div className="flex-1 w-full sm:w-auto flex flex-col justify-between gap-1.5 sm:gap-1">
+        <div className="flex items-start justify-between gap-2">
+          <h2 className="text-base sm:text-lg font-semibold leading-tight">{serviceName}</h2>
+          {/* Mobile status badge */}
+          <span
+            className={`sm:hidden shrink-0 px-2 py-0.5 rounded-full font-semibold text-xs flex items-center gap-1 ${statusInfo[status]?.bg ?? "bg-gray-100"} ${statusInfo[status]?.text ?? "text-gray-600"}`}
+          >
+            {statusInfo[status]?.icon}
+            {status.toUpperCase()}
+          </span>
         </div>
+        <p className="text-gray-600 font-semibold sm:font-medium text-sm sm:text-base">Rs. {price.toFixed(2)}</p>
 
-        <div className="flex items-center gap-2 text-gray-500 text-sm">
-          <Clock size={16} />
-          <span>{bookingTime}</span>
-        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 sm:gap-1 mt-1">
+          <div className="flex items-center gap-2 text-gray-500 text-xs sm:text-sm">
+            <Calendar size={14} className="sm:size-[16px]" />
+            <span className="truncate">{bookingDate}</span>
+          </div>
 
-        <div className="flex items-center gap-2 text-gray-500 text-sm">
-          <MapPin size={16} />
-          <span>{location}</span>
+          <div className="flex items-center gap-2 text-gray-500 text-xs sm:text-sm">
+            <Clock size={14} className="sm:size-[16px]" />
+            <span className="truncate">{bookingTime}</span>
+          </div>
+
+          <div className="flex items-center gap-2 text-gray-500 text-xs sm:text-sm sm:col-span-2">
+            <MapPin size={14} className="sm:size-[16px]" />
+            <span className="truncate">{location}</span>
+          </div>
         </div>
       </div>
 
-      <div className="shrink-0 flex items-center gap-1">
+      {/* Desktop status badge */}
+      <div className="hidden sm:flex shrink-0 items-center gap-1 self-center">
         <span
           className={`px-2 py-1 rounded-full font-semibold text-sm flex items-center gap-1 ${statusInfo[status]?.bg ?? "bg-gray-100"} ${statusInfo[status]?.text ?? "text-gray-600"}`}
         >

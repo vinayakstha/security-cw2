@@ -124,18 +124,18 @@ export default function ManageBooking() {
 
       {/* Modal */}
       {isModalOpen && selectedBooking && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
-          <div className="bg-white rounded-2xl p-8 w-[500px] max-w-[95vw] space-y-6 relative shadow-2xl">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50 p-3 sm:p-4">
+          <div className="bg-white rounded-2xl p-5 sm:p-8 w-full max-w-[500px] max-h-[90vh] overflow-y-auto space-y-4 sm:space-y-6 relative shadow-2xl">
             {/* Close Button */}
             <button
               onClick={closeModal}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition"
+              className="absolute top-3 sm:top-4 right-3 sm:right-4 text-gray-400 hover:text-gray-700 transition z-10"
             >
               <X size={20} />
             </button>
 
             {/* Title */}
-            <h2 className="text-2xl font-semibold text-gray-800">
+            <h2 className="text-xl sm:text-2xl font-semibold text-gray-800 pr-6">
               {selectedBooking.serviceId?.serviceName || "Unknown Service"}
             </h2>
 
@@ -143,36 +143,36 @@ export default function ManageBooking() {
             <img
               src={`${IMAGE_BASE_URL}${selectedBooking.serviceId?.serviceImage || ""}`}
               alt={selectedBooking.serviceId?.serviceName || "Service"}
-              className="w-full h-48 object-cover rounded-xl"
+              className="w-full h-40 sm:h-48 object-cover rounded-xl"
             />
 
             {/* Details Grid */}
-            <div className="grid grid-cols-2 gap-x-6 gap-y-4 text-sm text-gray-700">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-x-6 sm:gap-y-4 text-xs sm:text-sm text-gray-700">
               <div className="flex items-center gap-2">
-                <User size={16} className="text-gray-400" />
-                <span>
+                <User size={14} className="sm:size-[16px] text-gray-400 shrink-0" />
+                <span className="truncate">
                   {selectedBooking.userId?.username || "Unknown User"}
                 </span>
               </div>
 
               <div className="flex items-center gap-2">
-                <MapPin size={16} className="text-gray-400" />
-                <span>{selectedBooking.location}</span>
+                <MapPin size={14} className="sm:size-[16px] text-gray-400 shrink-0" />
+                <span className="truncate">{selectedBooking.location}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <Calendar size={16} className="text-gray-400" />
-                <span>{selectedBooking.bookingDate}</span>
+                <Calendar size={14} className="sm:size-[16px] text-gray-400 shrink-0" />
+                <span className="truncate">{selectedBooking.bookingDate}</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <Clock size={16} className="text-gray-400" />
-                <span>{selectedBooking.bookingTime}</span>
+                <Clock size={14} className="sm:size-[16px] text-gray-400 shrink-0" />
+                <span className="truncate">{selectedBooking.bookingTime}</span>
               </div>
 
               <div>
                 <span className="text-gray-500">Price</span>
-                <p className="font-medium text-gray-800">
+                <p className="font-medium text-gray-800 text-sm sm:text-base">
                   Rs {selectedBooking.price}
                 </p>
               </div>
@@ -181,7 +181,7 @@ export default function ManageBooking() {
                 <span className="text-gray-500">Status</span>
                 <br />
                 <p
-                  className={`inline-block mt-1 px-3 py-1 rounded-full text-xs font-semibold ${getStatusStyle(selectedBooking.status)}`}
+                  className={`inline-block mt-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full text-xs font-semibold ${getStatusStyle(selectedBooking.status)}`}
                 >
                   {selectedBooking.status.toUpperCase()}
                 </p>
@@ -191,12 +191,12 @@ export default function ManageBooking() {
             {/* Status Buttons - show for pending and paid */}
             {(selectedBooking.status === "pending" ||
               selectedBooking.status === "paid") && (
-              <div className="flex gap-3 justify-end pt-4 border-t">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 justify-end pt-3 sm:pt-4 border-t">
                 <button
                   onClick={() =>
                     handleStatusChange(selectedBooking._id, "completed")
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm"
                 >
                   <CheckCircle size={16} /> Mark Completed
                 </button>
@@ -205,7 +205,7 @@ export default function ManageBooking() {
                   onClick={() =>
                     handleStatusChange(selectedBooking._id, "cancelled")
                   }
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"
                 >
                   <XCircle size={16} /> Cancel Booking
                 </button>

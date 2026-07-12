@@ -21,12 +21,12 @@ export default function Navbar() {
         >
           <Image
             src="/images/home-repair.png"
-            alt="GharCare Logo"
+            alt="GharSewa Logo"
             width={32}
             height={32}
             priority
           />
-          <span>Gharcare</span>
+          <span>Gharsewa</span>
         </Link>
 
         <div className="hidden md:flex flex-1 justify-center items-center gap-8">
