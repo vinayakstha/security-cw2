@@ -87,6 +87,10 @@ export class UserBookingService {
       throw new HttpError(400, "Booking already cancelled");
     }
 
+    if (booking.status === "paid" || booking.status === "completed") {
+      throw new HttpError(400, "Cannot cancel a paid or completed booking");
+    }
+
     return await bookingRepository.updateBookingStatus(bookingId, "cancelled");
   }
 
