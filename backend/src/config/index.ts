@@ -7,7 +7,14 @@ export const PORT: number = process.env.PORT
 export const MONGODB_URI: string =
   process.env.MONGODB_URI || "mongodb://localhost:27017/Ghar-Care";
 
-export const JWT_SECRET: string = process.env.JWT_SECRET || "defult";
+const jwtSecret = process.env.JWT_SECRET;
+if (!jwtSecret) {
+  console.error("FATAL: JWT_SECRET environment variable is not set.");
+  console.error("Set a strong JWT_SECRET in your .env file before starting the server.");
+  process.exit(1);
+}
+
+export const JWT_SECRET: string = jwtSecret;
 
 export const RECAPTCHA_SECRET: string = process.env.RECAPTCHA_SECRET || "";
 
