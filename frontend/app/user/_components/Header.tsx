@@ -45,7 +45,7 @@ export default function Header() {
             alt="Logo"
             className="w-8 h-8 object-contain rounded-full"
           />
-          <h1 className="text-lg font-semibold text-gray-800">Gharcare</h1>
+          <h1 className="text-lg font-semibold text-gray-800">Gharsewa</h1>
         </div>
 
         {/* Right side */}
