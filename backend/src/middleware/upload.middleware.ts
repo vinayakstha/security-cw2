@@ -2,6 +2,7 @@ import multer from "multer";
 import uuid from "uuid";
 import path from "path";
 import fs from "fs";
+import { Request, Response, NextFunction } from "express";
 
 const uploadDir = path.join(__dirname, "../../uploads");
 if (!fs.existsSync(uploadDir)) {
@@ -37,6 +38,51 @@ const upload = multer({
   fileFilter: fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5mb limit
 });
+
+const JPEG_MAGIC_BYTES = [0xff, 0xd8, 0xff];
+const PNG_MAGIC_BYTES = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+function isJPEG(buffer: Buffer): boolean {
+  if (buffer.length < JPEG_MAGIC_BYTES.length) return false;
+  return JPEG_MAGIC_BYTES.every((byte, i) => buffer[i] === byte);
+}
+
+function isPNG(buffer: Buffer): boolean {
+  if (buffer.length < PNG_MAGIC_BYTES.length) return false;
+  return PNG_MAGIC_BYTES.every((byte, i) => buffer[i] === byte);
+}
+
+/**
+ * Middleware that validates the uploaded file's actual content (magic bytes)
+ * to prevent MIME type spoofing. Must be used AFTER uploads.single() / uploads.array().
+ */
+export const validateFileMagicBytes = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  if (!req.file) {
+    return next();
+  }
+
+  try {
+    const fileBuffer = fs.readFileSync(req.file.path);
+
+    if (!isJPEG(fileBuffer) && !isPNG(fileBuffer)) {
+      // Delete the invalid file from disk
+      fs.unlinkSync(req.file.path);
+      res.status(400).json({
+        message:
+          "Invalid file content. Only JPEG and PNG files are allowed based on file signature.",
+      });
+      return;
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const uploads = {
   single: (fieldName: string) => upload.single(fieldName),
