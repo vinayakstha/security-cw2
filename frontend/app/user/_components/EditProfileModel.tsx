@@ -142,7 +142,7 @@ export default function EditProfileModal({
                 <Pencil size={10} />
                 <input
                   type="file"
-                  accept="image/*"
+                  accept=".jpg,.jpeg,.png"
                   className="hidden"
                   onChange={handleImageChange}
                 />
