@@ -2,6 +2,7 @@ import multer from "multer";
 import uuid from "uuid";
 import path from "path";
 import fs from "fs";
+import { promises as fsPromises } from "fs";
 import { Request, Response, NextFunction } from "express";
 
 const uploadDir = path.join(__dirname, "../../uploads");
@@ -56,21 +57,21 @@ function isPNG(buffer: Buffer): boolean {
  * Middleware that validates the uploaded file's actual content (magic bytes)
  * to prevent MIME type spoofing. Must be used AFTER uploads.single() / uploads.array().
  */
-export const validateFileMagicBytes = (
+export const validateFileMagicBytes = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): void => {
+): Promise<void> => {
   if (!req.file) {
     return next();
   }
 
   try {
-    const fileBuffer = fs.readFileSync(req.file.path);
+    const fileBuffer = await fsPromises.readFile(req.file.path);
 
     if (!isJPEG(fileBuffer) && !isPNG(fileBuffer)) {
       // Delete the invalid file from disk
-      fs.unlinkSync(req.file.path);
+      await fsPromises.unlink(req.file.path);
       res.status(400).json({
         message:
           "Invalid file content. Only JPEG and PNG files are allowed based on file signature.",
