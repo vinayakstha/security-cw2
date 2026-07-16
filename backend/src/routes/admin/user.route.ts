@@ -4,7 +4,7 @@ import {
   adminOnlyMiddleware,
   authorizedMiddleware,
 } from "../../middleware/authorization.middleware";
-import { uploads } from "../../middleware/upload.middleware";
+import { uploads, validateFileMagicBytes } from "../../middleware/upload.middleware";
 
 const router = Router();
 const adminUserController = new AdminUserController();
@@ -15,6 +15,7 @@ router.use(adminOnlyMiddleware);
 router.post(
   "/",
   uploads.single("profilePicture"),
+  validateFileMagicBytes,
   adminUserController.createUser,
 );
 router.get("/", adminUserController.getAllUsers);
@@ -22,6 +23,7 @@ router.get("/:id", adminUserController.getUserById);
 router.put(
   "/:id",
   uploads.single("profilePicture"),
+  validateFileMagicBytes,
   adminUserController.updateUser,
 );
 router.delete("/:id", adminUserController.deleteUser);

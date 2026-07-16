@@ -126,7 +126,7 @@ export default function UpdateUserForm({ user }: { user: any }) {
                     onChange={(e) =>
                       handleImageChange(e.target.files?.[0], onChange)
                     }
-                    accept=".jpg,.jpeg,.png,.webp"
+                    accept=".jpg,.jpeg,.png"
                   />
                 </>
               )}

@@ -3,7 +3,7 @@ import {
   adminOnlyMiddleware,
   authorizedMiddleware,
 } from "../../middleware/authorization.middleware";
-import { uploads } from "../../middleware/upload.middleware";
+import { uploads, validateFileMagicBytes } from "../../middleware/upload.middleware";
 import { AdminCategoryController } from "../../controllers/admin/category.controller";
 
 let categoryController = new AdminCategoryController();
@@ -14,11 +14,13 @@ router.use(adminOnlyMiddleware);
 router.post(
   "/",
   uploads.single("categoryImage"),
+  validateFileMagicBytes,
   categoryController.createCategory,
 );
 router.put(
   "/:id",
   uploads.single("categoryImage"),
+  validateFileMagicBytes,
   categoryController.updateCategory,
 );
 

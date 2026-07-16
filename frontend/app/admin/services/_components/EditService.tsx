@@ -160,7 +160,7 @@ export default function EditServiceForm() {
             ref={fileInputRef}
             onChange={handleImageChange}
             className="hidden"
-            accept="image/*"
+            accept=".jpg,.jpeg,.png"
           />
         </div>
 

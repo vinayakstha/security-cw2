@@ -128,7 +128,7 @@ export default function CreateServiceForm() {
             ref={fileInputRef}
             onChange={handleImageChange}
             className="hidden"
-            accept="image/*"
+            accept=".jpg,.jpeg,.png"
           />
         </div>
 

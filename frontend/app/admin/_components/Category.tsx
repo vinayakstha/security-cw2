@@ -151,7 +151,7 @@ export default function Category() {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept=".jpg,.jpeg,.png"
                 className="hidden"
                 onChange={(e) => handleImageChange(e.target.files?.[0] || null)}
               />

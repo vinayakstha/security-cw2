@@ -3,7 +3,7 @@ import {
   adminOnlyMiddleware,
   authorizedMiddleware,
 } from "../../middleware/authorization.middleware";
-import { uploads } from "../../middleware/upload.middleware";
+import { uploads, validateFileMagicBytes } from "../../middleware/upload.middleware";
 import { AdminServiceController } from "../../controllers/admin/service.controller";
 
 let serviceController = new AdminServiceController();
@@ -15,12 +15,14 @@ router.use(adminOnlyMiddleware);
 router.post(
   "/",
   uploads.single("serviceImage"),
+  validateFileMagicBytes,
   serviceController.createService,
 );
 
 router.put(
   "/:id",
   uploads.single("serviceImage"),
+  validateFileMagicBytes,
   serviceController.updateService,
 );
 
