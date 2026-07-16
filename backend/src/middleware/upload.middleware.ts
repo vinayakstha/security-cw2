@@ -19,13 +19,15 @@ const storage = multer.diskStorage({
   },
 });
 
+const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png"];
+
 const fileFilter = (
   req: Express.Request,
   file: Express.Multer.File,
   cb: multer.FileFilterCallback,
 ) => {
-  if (!file.mimetype.startsWith("image/")) {
-    return cb(new Error("Only image file are allowed!"));
+  if (!ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+    return cb(new Error("Only JPEG and PNG image files are allowed!"));
   }
   cb(null, true);
 };
