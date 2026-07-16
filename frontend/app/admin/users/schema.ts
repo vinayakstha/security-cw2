@@ -21,7 +21,7 @@ export const UserSchema = z
         message: "Max file size is 5MB",
       })
       .refine((file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type), {
-        message: "Only .jpg, .jpeg, .png and .webp formats are supported",
+        message: "Only .jpg, .jpeg and .png formats are supported",
       }),
   })
   .refine((v) => v.password === v.confirmPassword, {
