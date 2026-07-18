@@ -1,4 +1,5 @@
 import z from "zod";
+import { passwordSchema } from "../utils/passwordPolicy";
 
 export const UserSchema = z.object({
   firstName: z.string().min(2),
@@ -6,7 +7,7 @@ export const UserSchema = z.object({
   username: z.string().min(2),
   email: z.email(),
   phoneNumber: z.string().min(10).optional(),
-  password: z.string().min(6).optional(),
+  password: passwordSchema.optional(),
   profilePicture: z.string(),
   role: z.enum(["user", "admin"]).default("user"),
   totpSecret: z.string().optional(),

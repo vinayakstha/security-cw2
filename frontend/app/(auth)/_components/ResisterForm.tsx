@@ -8,8 +8,11 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { handleRegister } from "@/lib/actions/auth-action";
+import { passwordSchema } from "@/lib/utils/passwordPolicy";
+import PasswordStrengthBar from "@/app/_components/PasswordStrengthBar";
 
 /* ---------------- ZOD SCHEMA ---------------- */
+
 const registerSchema = z
   .object({
     firstName: z.string().min(2, "First name is required"),
@@ -17,8 +20,8 @@ const registerSchema = z
     username: z.string().min(3, "Username must be at least 3 characters"),
     email: z.string().email("Please enter a valid email address"),
     phoneNumber: z.string().min(10, "Enter a valid phone number"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Please confirm your password"),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -34,10 +37,13 @@ export default function RegisterForm() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
   });
+
+  const watchedPassword = watch("password");
 
   const [error, setError] = useState("");
   const [pending, setTransition] = useTransition();
@@ -242,6 +248,8 @@ export default function RegisterForm() {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
+          {/* Password strength indicator */}
+          <PasswordStrengthBar password={watchedPassword || ""} />
           {errors.password && (
             <p className="text-xs text-red-500 mt-1">
               {errors.password.message}

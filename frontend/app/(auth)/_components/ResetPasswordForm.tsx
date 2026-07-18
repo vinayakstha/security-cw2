@@ -10,6 +10,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 
 import { resetPasswordSchema, ResetPasswordData } from "../schema";
 import { handleResetPassword } from "@/lib/actions/auth-action";
+import PasswordStrengthBar from "@/app/_components/PasswordStrengthBar";
 
 export default function ResetPasswordForm({ token }: { token: string }) {
   const router = useRouter();
@@ -24,11 +25,14 @@ export default function ResetPasswordForm({ token }: { token: string }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordData>({
     resolver: zodResolver(resetPasswordSchema),
     mode: "onSubmit",
   });
+
+  const watchedNewPassword = watch("newPassword");
 
   const onSubmit = (values: ResetPasswordData) => {
     setError(null);
@@ -114,6 +118,8 @@ export default function ResetPasswordForm({ token }: { token: string }) {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
+          {/* Password strength indicator */}
+          <PasswordStrengthBar password={watchedNewPassword || ""} />
           {errors.newPassword && (
             <p className="text-sm text-red-500 mt-2">
               {errors.newPassword.message}
