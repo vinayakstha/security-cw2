@@ -1,5 +1,6 @@
 import z from "zod";
 import { UserSchema } from "../types/user.type";
+import { passwordSchema } from "../utils/passwordPolicy";
 
 export const CreateUserDTO = UserSchema.pick({
   firstName: true,
@@ -11,7 +12,7 @@ export const CreateUserDTO = UserSchema.pick({
   profilePicture: true,
 })
   .extend({
-    confirmPassword: z.string().min(6),
+    confirmPassword: passwordSchema,
     profilePicture: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -23,7 +24,9 @@ export type CreateUserDTO = z.infer<typeof CreateUserDTO>;
 
 export const LoginUserDTO = z.object({
   email: z.email(),
-  password: z.string().min(6),
+  // Login should accept any password length (min 1) — bcrypt handles validation.
+  // The complexity policy is only enforced at password creation/reset time.
+  password: z.string().min(1, { message: "Password is required" }),
 });
 
 export type LoginUserDTO = z.infer<typeof LoginUserDTO>;

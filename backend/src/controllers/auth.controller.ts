@@ -1,5 +1,6 @@
 import { UserService } from "../services/user.service";
 import { CreateUserDTO, LoginUserDTO } from "../dtos/user.dto";
+import { passwordSchema } from "../utils/passwordPolicy";
 import { Request, Response } from "express";
 import z from "zod";
 import { verifyCaptcha } from "../utils/recaptcha";
@@ -109,7 +110,17 @@ export class AuthController {
 
       const token = req.params.token as string;
       const { newPassword } = req.body;
-      await userService.resetPassword(token, newPassword);
+
+      // Validate new password against password policy
+      const passwordParsed = passwordSchema.safeParse(newPassword);
+      if (!passwordParsed.success) {
+        return res.status(400).json({
+          success: false,
+          message: z.prettifyError(passwordParsed.error),
+        });
+      }
+
+      await userService.resetPassword(token, passwordParsed.data);
       return res.status(200).json({
         success: true,
         message: "Password has been reset successfully.",
