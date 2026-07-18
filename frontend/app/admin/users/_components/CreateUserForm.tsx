@@ -6,6 +6,7 @@ import { useRef, useState, useTransition } from "react";
 import { toast } from "react-toastify";
 import { handleCreateUser } from "@/lib/actions/admin/user-action";
 import { Pencil } from "lucide-react";
+import PasswordStrengthBar from "@/app/_components/PasswordStrengthBar";
 
 export default function AdminCreateUserPage() {
   const [pending, startTransition] = useTransition();
@@ -14,10 +15,13 @@ export default function AdminCreateUserPage() {
     handleSubmit,
     control,
     reset,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<UserData>({
     resolver: zodResolver(UserSchema),
   });
+
+  const watchedPassword = watch("password");
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -227,6 +231,7 @@ export default function AdminCreateUserPage() {
               } focus:ring-2 focus:ring-blue-500 outline-none`}
               {...register("password")}
             />
+            <PasswordStrengthBar password={watchedPassword || ""} />
             {errors.password && (
               <p className="text-xs text-red-500">{errors.password.message}</p>
             )}

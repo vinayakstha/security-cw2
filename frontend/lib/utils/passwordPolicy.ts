@@ -1,8 +1,13 @@
+import { z } from "zod";
+
 /**
  * Password Policy — client-side mirror of backend/src/utils/passwordPolicy.ts
  *
  * Used for real-time strength feedback without a server round-trip.
  * The backend always performs the authoritative validation.
+ *
+ * Re-exports a ready-to-use Zod `passwordSchema` so every form can share
+ * the exact same validation rules without duplication.
  */
 
 export const PASSWORD_MIN_LENGTH = 8;
@@ -80,3 +85,25 @@ export function getPasswordStrength(password: string): PasswordStrength {
 
   return { score, label, passed, failed };
 }
+
+/**
+ * Reusable Zod schema matching the backend policy.
+ * Use in any form schema: `password: passwordSchema,`
+ */
+export const passwordSchema = z
+  .string()
+  .min(PASSWORD_MIN_LENGTH, {
+    message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
+  })
+  .refine((val) => /[A-Z]/.test(val), {
+    message: "Password must contain at least one uppercase letter (A-Z)",
+  })
+  .refine((val) => /[a-z]/.test(val), {
+    message: "Password must contain at least one lowercase letter (a-z)",
+  })
+  .refine((val) => /\d/.test(val), {
+    message: "Password must contain at least one digit (0-9)",
+  })
+  .refine((val) => /[!@#$%^&*(),.?":{}|<>_\-`~\[\]\\\/';+=]/.test(val), {
+    message: "Password must contain at least one special character (!@#$%^&* etc.)",
+  });

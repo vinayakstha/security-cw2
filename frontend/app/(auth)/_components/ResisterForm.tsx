@@ -8,27 +8,10 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { handleRegister } from "@/lib/actions/auth-action";
-import { PASSWORD_MIN_LENGTH } from "@/lib/utils/passwordPolicy";
+import { passwordSchema } from "@/lib/utils/passwordPolicy";
 import PasswordStrengthBar from "@/app/_components/PasswordStrengthBar";
 
 /* ---------------- ZOD SCHEMA ---------------- */
-const passwordSchema = z
-  .string()
-  .min(PASSWORD_MIN_LENGTH, {
-    message: `Password must be at least ${PASSWORD_MIN_LENGTH} characters`,
-  })
-  .refine((val) => /[A-Z]/.test(val), {
-    message: "Password must contain at least one uppercase letter (A-Z)",
-  })
-  .refine((val) => /[a-z]/.test(val), {
-    message: "Password must contain at least one lowercase letter (a-z)",
-  })
-  .refine((val) => /\d/.test(val), {
-    message: "Password must contain at least one digit (0-9)",
-  })
-  .refine((val) => /[!@#$%^&*(),.?":{}|<>_\-`~\[\]\\\/';+=]/.test(val), {
-    message: "Password must contain at least one special character (!@#$%^&* etc.)",
-  });
 
 const registerSchema = z
   .object({

@@ -1,4 +1,5 @@
 import z from "zod";
+import { passwordSchema } from "@/lib/utils/passwordPolicy";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
@@ -7,8 +8,8 @@ export const UserSchema = z
   .object({
     email: z.email({ message: "Enter a valid email" }),
     phoneNumber: z.string().min(1, { message: "Phone number is required" }),
-    password: z.string().min(6, { message: "Minimum 6 characters" }),
-    confirmPassword: z.string().min(6, { message: "Minimum 6 characters" }),
+    password: passwordSchema,
+    confirmPassword: passwordSchema,
     firstName: z.string().optional(),
     lastName: z.string().optional(),
     username: z

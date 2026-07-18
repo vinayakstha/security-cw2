@@ -1,4 +1,5 @@
 import z from "zod";
+import { passwordSchema } from "@/lib/utils/passwordPolicy";
 
 export const forgetPasswordSchema = z.object({
   email: z.email({ message: "Enter a valid email" }),
@@ -7,8 +8,8 @@ export type ForgetPasswordData = z.infer<typeof forgetPasswordSchema>;
 
 export const resetPasswordSchema = z
   .object({
-    newPassword: z.string().min(6, { message: "Minimum 6 characters" }),
-    confirmNewPassword: z.string().min(6, { message: "Minimum 6 characters" }),
+    newPassword: passwordSchema,
+    confirmNewPassword: passwordSchema,
   })
   .refine((v) => v.newPassword === v.confirmNewPassword, {
     path: ["confirmNewPassword"],
