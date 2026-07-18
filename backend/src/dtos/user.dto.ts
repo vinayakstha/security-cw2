@@ -28,10 +28,15 @@ export const LoginUserDTO = z.object({
 
 export type LoginUserDTO = z.infer<typeof LoginUserDTO>;
 
+/**
+ * Strip HTML tags from a string to prevent XSS.
+ */
+const stripHtml = (val: string): string => val.replace(/<[^>]*>/g, "");
+
 export const UpdateUserDTO = z.object({
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  username: z.string().optional(),
+  firstName: z.string().transform(stripHtml).optional(),
+  lastName: z.string().transform(stripHtml).optional(),
+  username: z.string().transform(stripHtml).optional(),
   phoneNumber: z.string().optional(),
   profilePicture: z.string().optional(),
 });

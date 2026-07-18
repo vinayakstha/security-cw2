@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { UserBookingService } from "../services/booking.service";
 import { CreateBookingDto } from "../dtos/booking.dto";
+import { z } from "zod";
 
 const bookingService = new UserBookingService();
 
@@ -8,16 +9,21 @@ export class UserBookingController {
   //Create Booking
   async createBooking(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsedData = CreateBookingDto.parse(req.body);
+      const parsedData = CreateBookingDto.safeParse(req.body);
+      if (!parsedData.success) {
+        return res
+          .status(400)
+          .json({ success: false, message: z.prettifyError(parsedData.error) });
+      }
 
       const userId = (req as any).user.id; // from auth middleware
 
       const booking = await bookingService.createBooking(
         userId,
-        parsedData.serviceId,
-        parsedData.bookingDate,
-        parsedData.bookingTime,
-        parsedData.location,
+        parsedData.data.serviceId,
+        parsedData.data.bookingDate,
+        parsedData.data.bookingTime,
+        parsedData.data.location,
       );
 
       return res.status(201).json({

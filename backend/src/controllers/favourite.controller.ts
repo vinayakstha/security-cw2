@@ -13,12 +13,17 @@ export class UserFavouriteController {
   // Add a favourite
   async addFavourite(req: Request, res: Response, next: NextFunction) {
     try {
-      const parsedData = CreateFavouriteDto.parse(req.body);
+      const parsedData = CreateFavouriteDto.safeParse(req.body);
+      if (!parsedData.success) {
+        return res
+          .status(400)
+          .json({ success: false, message: z.prettifyError(parsedData.error) });
+      }
       const userId = (req as any).user.id; // from auth middleware
 
       const favourite = await favouriteService.addFavourite(
         userId,
-        parsedData.serviceId,
+        parsedData.data.serviceId,
       );
 
       return res.status(201).json({
